@@ -1,6 +1,11 @@
 {
   "name": "nodejs-license-file",
   "version": "1.0.0",
+  "author": {
+    "name": "Yuriy Bushev",
+    "email": "bushevuv@gmail.com",
+    "url": "https://github.com/bushev"
+  },
   "dependencies": {
     "mustache": "2.2.1"
   },

@@ -28,8 +28,15 @@ const crypto = require('crypto');
  */
 const licenseFile = require('../lib');
 
-const LICENSE_VERSION = 1;
-const EMAIL           = 'some@email.com';
+/**
+ * Some constants
+ */
+const LICENSE_VERSION     = '1';
+const APPLICATION_VERSION = '1.0.0';
+const FIRST_NAME          = 'First Name';
+const LAST_NAME           = 'Last Name';
+const EMAIL               = 'some@email.com';
+const EXPIRATION_DATE     = '18.10.2025';
 
 describe('Generate license file', function () {
 
@@ -53,7 +60,11 @@ describe('Generate license file', function () {
         let template = [
             '====BEGIN LICENSE====',
             '{{&licenseVersion}}',
+            '{{&applicationVersion}}',
+            '{{&firstName}}',
+            '{{&lastName}}',
             '{{&email}}',
+            '{{&expirationDate}}',
             '{{&serial}}',
             '=====END LICENSE====='
         ].join('\n');
@@ -63,14 +74,26 @@ describe('Generate license file', function () {
             privateKeyPath: 'test/keys/key.pem',
             data: {
                 licenseVersion: LICENSE_VERSION,
-                email: EMAIL
+                applicationVersion: APPLICATION_VERSION,
+                firstName: FIRST_NAME,
+                lastName: LAST_NAME,
+                email: EMAIL,
+                expirationDate: EXPIRATION_DATE
             }
         }, function (err, fileData) {
             should.equal(err, null);
 
-            let regExp = new RegExp('^====BEGIN LICENSE====\\n' + LICENSE_VERSION + '\\n' + EMAIL + '\\n(.*)\\n=====END LICENSE=====$');
+            let regExp = new RegExp('^====BEGIN LICENSE====\\n' +
+                LICENSE_VERSION + '\\n' +
+                APPLICATION_VERSION + '\\n' +
+                FIRST_NAME + '\\n' +
+                LAST_NAME + '\\n' +
+                EMAIL + '\\n' +
+                EXPIRATION_DATE + '\\n(.*)\\n=====END LICENSE=====$');
 
             fileData.should.match(regExp);
+
+            fs.writeFileSync('test/2.lic', fileData, 'utf8');
 
             done()
         });
@@ -86,15 +109,63 @@ describe('Parse license files', function () {
         }, function (err, data) {
             should.equal(err, null);
 
-            var verify = crypto.createVerify('RSA-SHA256');
-
-            verify.update('data string');
-
-            let res = verify.verify(fs.readFileSync('test/keys/key.pub'), data.serial, 'base64');
-
-            res.should.be.ok();
+            data.valid.should.be.ok();
+            data.data.should.be.eql('data string');
 
             done();
         });
+    });
+
+    it('with default template', function (done) {
+        licenseFile.parse({
+            publicKeyPath: 'test/keys/key.pub',
+            fileData: fs.readFileSync('test/2.lic', 'utf8'),
+            fileParseFnc: (fileData, callback) => {
+                let dataLines = fileData.split('\n');
+
+                if (dataLines.length != 9) {
+                    return callback(new Error('LicenseFile::fileParseFnc: License file must have 5 lines, actual: ' + dataLines.length));
+                }
+
+                let licenseVersion     = dataLines[1];
+                let applicationVersion = dataLines[2];
+                let firstName          = dataLines[3];
+                let lastName           = dataLines[4];
+                let email              = dataLines[5];
+                let expirationDate     = dataLines[6];
+                let serial             = dataLines[7];
+
+                callback(null, {
+                    serial: serial, data: {
+                        licenseVersion: licenseVersion,
+                        applicationVersion: applicationVersion,
+                        firstName: firstName,
+                        lastName: lastName,
+                        email: email,
+                        expirationDate: expirationDate
+                    }
+                });
+            }
+        }, function (err, data) {
+            should.equal(err, null);
+
+            data.valid.should.be.ok();
+            data.data.licenseVersion.should.be.eql(LICENSE_VERSION);
+            data.data.applicationVersion.should.be.eql(APPLICATION_VERSION);
+            data.data.firstName.should.be.eql(FIRST_NAME);
+            data.data.lastName.should.be.eql(LAST_NAME);
+            data.data.email.should.be.eql(EMAIL);
+            data.data.expirationDate.should.be.eql(EXPIRATION_DATE);
+
+            done();
+        });
+    });
+});
+
+describe('Clean', function () {
+    it('license files', function (done) {
+        fs.unlinkSync('test/1.lic');
+        fs.unlinkSync('test/2.lic');
+        done();
     });
 });
