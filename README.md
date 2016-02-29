@@ -7,6 +7,13 @@ The module requires openssl.
 
 ## Basic usage
 
+### Getting started
+
+Install nodejs-license-file with:
+```
+npm install nodejs-license-file --save
+```
+
 ### Generating license file
 
 ```javascript
