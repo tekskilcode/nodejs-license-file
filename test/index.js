@@ -26,7 +26,7 @@ const crypto = require('crypto');
  *
  * @type {Generator|exports|module.exports}
  */
-const licenseFile = require('../lib');
+const licenseFile = require('../index');
 
 /**
  * Some constants
