@@ -80,7 +80,7 @@ describe('Generate license file', () => {
                 email: EMAIL,
                 expirationDate: EXPIRATION_DATE
             }
-        }, err, fileData => {
+        }, (err, fileData) => {
             should.equal(err, null);
 
             let regExp = new RegExp('^====BEGIN LICENSE====\\n' +
