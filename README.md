@@ -23,7 +23,7 @@ licenseFile.generate({
    privateKeyPath: 'path/to/key.pem',
    data: 'data string'
 }, (err, fileData) => {
-
+    console.log(fileData);
 });
 ```
 
@@ -44,7 +44,7 @@ licenseFile.parse({
     publicKeyPath: 'path/to/key.pub',
     fileData: fs.readFileSync('path/to/file.lic', 'utf8')
 }, (err, data) => {
-
+    console.log(data);
 });
 ```
 
@@ -87,7 +87,7 @@ licenseFile.generate({
         expirationDate: '12/10/2025'
     }
 }, (err, fileData) => {
-
+    console.log(fileData);
 });
 ```
 
@@ -128,7 +128,8 @@ licenseFile.parse({
         let serial             = dataLines[7];
     
         callback(null, {
-            serial: serial, data: {
+            serial: serial,
+            data: {
                 licenseVersion: licenseVersion,
                 applicationVersion: applicationVersion,
                 firstName: firstName,
@@ -139,7 +140,7 @@ licenseFile.parse({
         });
     }
 }, (err, data) => {
-
+    console.log(data);
 });
 ```
 
