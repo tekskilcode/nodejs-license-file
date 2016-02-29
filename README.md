@@ -15,7 +15,7 @@ const licenseFile = require('nodejs-license-file');
 licenseFile.generate({
    privateKeyPath: 'path/to/key.pem',
    data: 'data string'
-}, function (err, fileData) {
+}, (err, fileData) => {
 
 });
 ```
@@ -36,7 +36,7 @@ const licenseFile = require('nodejs-license-file');
 licenseFile.parse({
     publicKeyPath: 'path/to/key.pub',
     fileData: fs.readFileSync('path/to/file.lic', 'utf8')
-}, function (err, data) {
+}, (err, data) => {
 
 });
 ```
@@ -79,7 +79,7 @@ licenseFile.generate({
         email: 'some@email.com',
         expirationDate: '12/10/2025'
     }
-}, function (err, fileData) {
+}, (err, fileData) => {
 
 });
 ```
@@ -131,7 +131,7 @@ licenseFile.parse({
             }
         });
     }
-}, function (err, data) {
+}, (err, data) => {
 
 });
 ```

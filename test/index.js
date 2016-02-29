@@ -38,13 +38,13 @@ const LAST_NAME           = 'Last Name';
 const EMAIL               = 'some@email.com';
 const EXPIRATION_DATE     = '18.10.2025';
 
-describe('Generate license file', function () {
+describe('Generate license file', () => {
 
-    it('with default template', function (done) {
+    it('with default template', done => {
         licenseFile.generate({
             privateKeyPath: 'test/keys/key.pem',
             data: 'data string'
-        }, function (err, fileData) {
+        }, (err, fileData) => {
             should.equal(err, null);
 
             fileData.should.match(/^====BEGIN LICENSE====\ndata string\n(.*)\n=====END LICENSE=====$/);
@@ -55,7 +55,7 @@ describe('Generate license file', function () {
         });
     });
 
-    it('with custom template', function (done) {
+    it('with custom template', done => {
 
         let template = [
             '====BEGIN LICENSE====',
@@ -80,7 +80,7 @@ describe('Generate license file', function () {
                 email: EMAIL,
                 expirationDate: EXPIRATION_DATE
             }
-        }, function (err, fileData) {
+        }, err, fileData => {
             should.equal(err, null);
 
             let regExp = new RegExp('^====BEGIN LICENSE====\\n' +
@@ -100,13 +100,13 @@ describe('Generate license file', function () {
     });
 });
 
-describe('Parse license files', function () {
+describe('Parse license files', () => {
 
-    it('with default template', function (done) {
+    it('with default template', done => {
         licenseFile.parse({
             publicKeyPath: 'test/keys/key.pub',
             fileData: fs.readFileSync('test/1.lic', 'utf8')
-        }, function (err, data) {
+        }, (err, data) => {
             should.equal(err, null);
 
             data.valid.should.be.ok();
@@ -116,7 +116,7 @@ describe('Parse license files', function () {
         });
     });
 
-    it('with default template', function (done) {
+    it('with default template', done => {
         licenseFile.parse({
             publicKeyPath: 'test/keys/key.pub',
             fileData: fs.readFileSync('test/2.lic', 'utf8'),
@@ -146,7 +146,7 @@ describe('Parse license files', function () {
                     }
                 });
             }
-        }, function (err, data) {
+        }, (err, data) => {
             should.equal(err, null);
 
             data.valid.should.be.ok();
@@ -162,8 +162,8 @@ describe('Parse license files', function () {
     });
 });
 
-describe('Clean', function () {
-    it('license files', function (done) {
+describe('Clean', () => {
+    it('license files', done => {
         fs.unlinkSync('test/1.lic');
         fs.unlinkSync('test/2.lic');
         done();
