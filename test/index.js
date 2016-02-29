@@ -1,18 +1,25 @@
 'use strict';
 
 /**
- * Assert library
- *
- * @type {ok|exports|module.exports}
- */
-const assert = require('assert');
-
-/**
  * Should library
  *
  * @type {should|exports|module.exports}
  */
 const should = require('should');
+
+/**
+ * Core fs module
+ *
+ * @type {exports|module.exports}
+ */
+const fs = require('fs');
+
+/**
+ * Core crypto module
+ *
+ * @type {exports|module.exports}
+ */
+const crypto = require('crypto');
 
 /**
  * LicenseFile module
@@ -24,22 +31,24 @@ const licenseFile = require('../lib');
 const LICENSE_VERSION = 1;
 const EMAIL           = 'some@email.com';
 
-describe('Generate license files', function () {
+describe('Generate license file', function () {
 
-    it('Generate license file', function (done) {
+    it('with default template', function (done) {
         licenseFile.generate({
             privateKeyPath: 'test/keys/key.pem',
-            data: 'Some data here'
+            data: 'data string'
         }, function (err, fileData) {
-            assert.equal(null, err);
+            should.equal(err, null);
 
-            fileData.should.match(/^====BEGIN LICENSE====\nSome data here\n(.*)\n=====END LICENSE=====$/);
+            fileData.should.match(/^====BEGIN LICENSE====\ndata string\n(.*)\n=====END LICENSE=====$/);
+
+            fs.writeFileSync('test/1.lic', fileData, 'utf8');
 
             done()
         });
     });
 
-    it('Generate license file with custom template', function (done) {
+    it('with custom template', function (done) {
 
         let template = [
             '====BEGIN LICENSE====',
@@ -57,9 +66,9 @@ describe('Generate license files', function () {
                 email: EMAIL
             }
         }, function (err, fileData) {
-            assert.equal(null, err);
+            should.equal(err, null);
 
-            let regExp = new RegExp('^====BEGIN LICENSE====\n' + LICENSE_VERSION + '\n' + EMAIL + '\n(.*)\n=====END LICENSE=====$');
+            let regExp = new RegExp('^====BEGIN LICENSE====\\n' + LICENSE_VERSION + '\\n' + EMAIL + '\\n(.*)\\n=====END LICENSE=====$');
 
             fileData.should.match(regExp);
 
@@ -70,4 +79,22 @@ describe('Generate license files', function () {
 
 describe('Parse license files', function () {
 
+    it('with default template', function (done) {
+        licenseFile.parse({
+            publicKeyPath: 'test/keys/key.pub',
+            fileData: fs.readFileSync('test/1.lic', 'utf8')
+        }, function (err, data) {
+            should.equal(err, null);
+
+            var verify = crypto.createVerify('RSA-SHA256');
+
+            verify.update('data string');
+
+            let res = verify.verify(fs.readFileSync('test/keys/key.pub'), data.serial, 'base64');
+
+            res.should.be.ok();
+
+            done();
+        });
+    });
 });
