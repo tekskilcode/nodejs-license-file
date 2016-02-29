@@ -15,13 +15,6 @@ const should = require('should');
 const fs = require('fs');
 
 /**
- * Core crypto module
- *
- * @type {exports|module.exports}
- */
-const crypto = require('crypto');
-
-/**
  * LicenseFile module
  *
  * @type {Generator|exports|module.exports}

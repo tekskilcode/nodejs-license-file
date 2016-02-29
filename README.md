@@ -116,7 +116,7 @@ licenseFile.parse({
         let dataLines = fileData.split('\n');
     
         if (dataLines.length != 9) {
-            return callback(new Error('LicenseFile::fileParseFnc: License file must have 5 lines, actual: ' + dataLines.length));
+            return callback(new Error('LicenseFile::fileParseFnc: License file must have 9 lines, actual: ' + dataLines.length));
         }
     
         let licenseVersion     = dataLines[1];
