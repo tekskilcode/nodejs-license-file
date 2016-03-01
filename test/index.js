@@ -29,7 +29,7 @@ const APPLICATION_VERSION = '1.0.0';
 const FIRST_NAME          = 'First Name';
 const LAST_NAME           = 'Last Name';
 const EMAIL               = 'some@email.com';
-const EXPIRATION_DATE     = '18.10.2025';
+const EXPIRATION_DATE     = '2025/09/25';
 
 describe('Generate license file', () => {
 
@@ -109,7 +109,23 @@ describe('Parse license files', () => {
         });
     });
 
-    it('with default template', done => {
+    it('with default template (bad license file)', done => {
+
+        var fileData = fs.readFileSync('test/1.lic', 'utf8').replace(/data string/g, 'another one data string');
+
+        licenseFile.parse({
+            publicKeyPath: 'test/keys/key.pub',
+            fileData: fileData
+        }, (err, data) => {
+            should.equal(err, null);
+
+            data.valid.should.not.be.ok();
+
+            done();
+        });
+    });
+
+    it('with custom template', done => {
         licenseFile.parse({
             publicKeyPath: 'test/keys/key.pub',
             fileData: fs.readFileSync('test/2.lic', 'utf8'),
@@ -149,6 +165,48 @@ describe('Parse license files', () => {
             data.data.lastName.should.be.eql(LAST_NAME);
             data.data.email.should.be.eql(EMAIL);
             data.data.expirationDate.should.be.eql(EXPIRATION_DATE);
+
+            done();
+        });
+    });
+
+    it('with custom template (bad license file)', done => {
+
+        var fileData = fs.readFileSync('test/2.lic', 'utf8').replace(/2025\/09\/25/g, '2045/09/25');
+
+        licenseFile.parse({
+            publicKeyPath: 'test/keys/key.pub',
+            fileData: fileData,
+            fileParseFnc: (fileData, callback) => {
+                let dataLines = fileData.split('\n');
+
+                if (dataLines.length != 9) {
+                    return callback(new Error('LicenseFile::fileParseFnc: License file must have 5 lines, actual: ' + dataLines.length));
+                }
+
+                let licenseVersion     = dataLines[1];
+                let applicationVersion = dataLines[2];
+                let firstName          = dataLines[3];
+                let lastName           = dataLines[4];
+                let email              = dataLines[5];
+                let expirationDate     = dataLines[6];
+                let serial             = dataLines[7];
+
+                callback(null, {
+                    serial: serial, data: {
+                        licenseVersion: licenseVersion,
+                        applicationVersion: applicationVersion,
+                        firstName: firstName,
+                        lastName: lastName,
+                        email: email,
+                        expirationDate: expirationDate
+                    }
+                });
+            }
+        }, (err, data) => {
+            should.equal(err, null);
+
+            data.valid.should.not.be.ok();
 
             done();
         });
