@@ -1,6 +1,6 @@
-## nodejs-license-file [![Circle CI](https://circleci.com/gh/bushev/nodejs-license-file.svg?style=svg)](https://circleci.com/gh/bushev/nodejs-license-file)
+## nodejs-license-file
 
-A lightweight License file generator and parser for NodeJS.
+A lightweight (Zero dependency) License file generator and parser for NodeJS.
 
 ## Requirements
 The module requires openssl.
@@ -114,11 +114,11 @@ licenseFile.parse({
     fileData: fs.readFileSync('path/to/file.lic', 'utf8'),
     fileParseFnc: (fileData, callback) => {
         let dataLines = fileData.split('\n');
-    
+
         if (dataLines.length != 9) {
             return callback(new Error('LicenseFile::fileParseFnc: License file must have 9 lines, actual: ' + dataLines.length));
         }
-    
+
         let licenseVersion     = dataLines[1];
         let applicationVersion = dataLines[2];
         let firstName          = dataLines[3];
@@ -126,7 +126,7 @@ licenseFile.parse({
         let email              = dataLines[5];
         let expirationDate     = dataLines[6];
         let serial             = dataLines[7];
-    
+
         callback(null, {
             serial: serial,
             data: {
