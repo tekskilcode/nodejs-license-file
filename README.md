@@ -2,8 +2,15 @@
 
 A lightweight (Zero dependency) License file generator and parser for NodeJS.
 
-## Requirements
-The module requires openssl.
+## Generate a keypair using OpenSSL
+
+1. Generate an RSA 2048 bit private key
+
+    `openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:2048`
+
+2. Extract the public key from an RSA keypair
+
+    `openssl rsa -pubout -in private_key.pem -out public_key.pem`
 
 ## Basic usage
 

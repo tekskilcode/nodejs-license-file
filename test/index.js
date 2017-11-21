@@ -35,7 +35,7 @@ describe('Generate license file', () => {
 
     it('with default template', done => {
         licenseFile.generate({
-            privateKeyPath: 'test/keys/key.pem',
+            privateKeyPath: 'test/keys/private_key.pem',
             data: 'data string'
         }, (err, fileData) => {
             should.equal(err, null);
@@ -64,7 +64,7 @@ describe('Generate license file', () => {
 
         licenseFile.generate({
             template: template,
-            privateKeyPath: 'test/keys/key.pem',
+            privateKeyPath: 'test/keys/private_key.pem',
             data: {
                 licenseVersion: LICENSE_VERSION,
                 applicationVersion: APPLICATION_VERSION,
@@ -97,7 +97,7 @@ describe('Parse license files', () => {
 
     it('with default template', done => {
         licenseFile.parse({
-            publicKeyPath: 'test/keys/key.pub',
+            publicKeyPath: 'test/keys/public_key.pem',
             fileData: fs.readFileSync('test/1.lic', 'utf8')
         }, (err, data) => {
             should.equal(err, null);
@@ -114,7 +114,7 @@ describe('Parse license files', () => {
         const fileData = fs.readFileSync('test/1.lic', 'utf8').replace(/data string/g, 'another one data string');
 
         licenseFile.parse({
-            publicKeyPath: 'test/keys/key.pub',
+            publicKeyPath: 'test/keys/public_key.pem',
             fileData: fileData
         }, (err, data) => {
             should.equal(err, null);
@@ -127,7 +127,7 @@ describe('Parse license files', () => {
 
     it('with custom template', done => {
         licenseFile.parse({
-            publicKeyPath: 'test/keys/key.pub',
+            publicKeyPath: 'test/keys/public_key.pem',
             fileData: fs.readFileSync('test/2.lic', 'utf8'),
             fileParseFnc: (fileData, callback) => {
                 const dataLines = fileData.split('\n');
@@ -175,7 +175,7 @@ describe('Parse license files', () => {
         const fileData = fs.readFileSync('test/2.lic', 'utf8').replace(/2025\/09\/25/g, '2045/09/25');
 
         licenseFile.parse({
-            publicKeyPath: 'test/keys/key.pub',
+            publicKeyPath: 'test/keys/public_key.pem',
             fileData: fileData,
             fileParseFnc: (fileData, callback) => {
                 let dataLines = fileData.split('\n');
