@@ -1,3 +1,8 @@
+## [v1.1.1]
+> Nov 21, 2017
+
+- Specify `utf8` encoding for `readFileSync`
+
 ## [v1.1.0]
 > Apr 04, 2017
 

@@ -50,7 +50,7 @@ describe('Generate license file', () => {
 
     it('with custom template', done => {
 
-        let template = [
+        const template = [
             '====BEGIN LICENSE====',
             '{{&licenseVersion}}',
             '{{&applicationVersion}}',
@@ -76,7 +76,7 @@ describe('Generate license file', () => {
         }, (err, fileData) => {
             should.equal(err, null);
 
-            let regExp = new RegExp('^====BEGIN LICENSE====\\n' +
+            const regExp = new RegExp('^====BEGIN LICENSE====\\n' +
                 LICENSE_VERSION + '\\n' +
                 APPLICATION_VERSION + '\\n' +
                 FIRST_NAME + '\\n' +
@@ -111,7 +111,7 @@ describe('Parse license files', () => {
 
     it('with default template (bad license file)', done => {
 
-        var fileData = fs.readFileSync('test/1.lic', 'utf8').replace(/data string/g, 'another one data string');
+        const fileData = fs.readFileSync('test/1.lic', 'utf8').replace(/data string/g, 'another one data string');
 
         licenseFile.parse({
             publicKeyPath: 'test/keys/key.pub',
@@ -130,19 +130,19 @@ describe('Parse license files', () => {
             publicKeyPath: 'test/keys/key.pub',
             fileData: fs.readFileSync('test/2.lic', 'utf8'),
             fileParseFnc: (fileData, callback) => {
-                let dataLines = fileData.split('\n');
+                const dataLines = fileData.split('\n');
 
-                if (dataLines.length != 9) {
+                if (dataLines.length !== 9) {
                     return callback(new Error('LicenseFile::fileParseFnc: License file must have 5 lines, actual: ' + dataLines.length));
                 }
 
-                let licenseVersion     = dataLines[1];
-                let applicationVersion = dataLines[2];
-                let firstName          = dataLines[3];
-                let lastName           = dataLines[4];
-                let email              = dataLines[5];
-                let expirationDate     = dataLines[6];
-                let serial             = dataLines[7];
+                const licenseVersion     = dataLines[1];
+                const applicationVersion = dataLines[2];
+                const firstName          = dataLines[3];
+                const lastName           = dataLines[4];
+                const email              = dataLines[5];
+                const expirationDate     = dataLines[6];
+                const serial             = dataLines[7];
 
                 callback(null, {
                     serial: serial, data: {
@@ -172,7 +172,7 @@ describe('Parse license files', () => {
 
     it('with custom template (bad license file)', done => {
 
-        var fileData = fs.readFileSync('test/2.lic', 'utf8').replace(/2025\/09\/25/g, '2045/09/25');
+        const fileData = fs.readFileSync('test/2.lic', 'utf8').replace(/2025\/09\/25/g, '2045/09/25');
 
         licenseFile.parse({
             publicKeyPath: 'test/keys/key.pub',
@@ -180,17 +180,17 @@ describe('Parse license files', () => {
             fileParseFnc: (fileData, callback) => {
                 let dataLines = fileData.split('\n');
 
-                if (dataLines.length != 9) {
+                if (dataLines.length !== 9) {
                     return callback(new Error('LicenseFile::fileParseFnc: License file must have 5 lines, actual: ' + dataLines.length));
                 }
 
-                let licenseVersion     = dataLines[1];
-                let applicationVersion = dataLines[2];
-                let firstName          = dataLines[3];
-                let lastName           = dataLines[4];
-                let email              = dataLines[5];
-                let expirationDate     = dataLines[6];
-                let serial             = dataLines[7];
+                const licenseVersion     = dataLines[1];
+                const applicationVersion = dataLines[2];
+                const firstName          = dataLines[3];
+                const lastName           = dataLines[4];
+                const email              = dataLines[5];
+                const expirationDate     = dataLines[6];
+                const serial             = dataLines[7];
 
                 callback(null, {
                     serial: serial, data: {
