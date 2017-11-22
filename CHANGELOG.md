@@ -1,3 +1,8 @@
+## [v1.1.3]
+> Nov 22, 2017
+
+- Fix validation for numeric data
+
 ## [v1.1.1]
 > Nov 21, 2017
 

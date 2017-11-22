@@ -29,6 +29,7 @@ const APPLICATION_VERSION = '1.0.0';
 const FIRST_NAME          = 'First Name';
 const LAST_NAME           = 'Last Name';
 const EMAIL               = 'some@email.com';
+const SOME_NUMBER         = 123;
 const EXPIRATION_DATE     = '2025/09/25';
 
 describe('Generate license file', () => {
@@ -57,6 +58,7 @@ describe('Generate license file', () => {
             '{{&firstName}}',
             '{{&lastName}}',
             '{{&email}}',
+            '{{&someNumber}}',
             '{{&expirationDate}}',
             '{{&serial}}',
             '=====END LICENSE====='
@@ -71,6 +73,7 @@ describe('Generate license file', () => {
                 firstName: FIRST_NAME,
                 lastName: LAST_NAME,
                 email: EMAIL,
+                someNumber: SOME_NUMBER,
                 expirationDate: EXPIRATION_DATE
             }
         }, (err, fileData) => {
@@ -82,6 +85,7 @@ describe('Generate license file', () => {
                 FIRST_NAME + '\\n' +
                 LAST_NAME + '\\n' +
                 EMAIL + '\\n' +
+                SOME_NUMBER + '\\n' +
                 EXPIRATION_DATE + '\\n(.*)\\n=====END LICENSE=====$');
 
             fileData.should.match(regExp);
@@ -132,8 +136,8 @@ describe('Parse license files', () => {
             fileParseFnc: (fileData, callback) => {
                 const dataLines = fileData.split('\n');
 
-                if (dataLines.length !== 9) {
-                    return callback(new Error('LicenseFile::fileParseFnc: License file must have 5 lines, actual: ' + dataLines.length));
+                if (dataLines.length !== 10) {
+                    return callback(new Error('LicenseFile::fileParseFnc: License file must have 6 lines, actual: ' + dataLines.length));
                 }
 
                 const licenseVersion     = dataLines[1];
@@ -141,17 +145,19 @@ describe('Parse license files', () => {
                 const firstName          = dataLines[3];
                 const lastName           = dataLines[4];
                 const email              = dataLines[5];
-                const expirationDate     = dataLines[6];
-                const serial             = dataLines[7];
+                const someNumber         = dataLines[6];
+                const expirationDate     = dataLines[7];
+                const serial             = dataLines[8];
 
                 callback(null, {
                     serial: serial, data: {
-                        licenseVersion: licenseVersion,
-                        applicationVersion: applicationVersion,
-                        firstName: firstName,
-                        lastName: lastName,
-                        email: email,
-                        expirationDate: expirationDate
+                        licenseVersion,
+                        applicationVersion,
+                        firstName,
+                        lastName,
+                        email,
+                        someNumber,
+                        expirationDate
                     }
                 });
             }
@@ -164,6 +170,7 @@ describe('Parse license files', () => {
             data.data.firstName.should.be.eql(FIRST_NAME);
             data.data.lastName.should.be.eql(LAST_NAME);
             data.data.email.should.be.eql(EMAIL);
+            data.data.someNumber.should.be.eql(SOME_NUMBER.toString());
             data.data.expirationDate.should.be.eql(EXPIRATION_DATE);
 
             done();
@@ -180,8 +187,8 @@ describe('Parse license files', () => {
             fileParseFnc: (fileData, callback) => {
                 let dataLines = fileData.split('\n');
 
-                if (dataLines.length !== 9) {
-                    return callback(new Error('LicenseFile::fileParseFnc: License file must have 5 lines, actual: ' + dataLines.length));
+                if (dataLines.length !== 10) {
+                    return callback(new Error('LicenseFile::fileParseFnc: License file must have 10 lines, actual: ' + dataLines.length));
                 }
 
                 const licenseVersion     = dataLines[1];

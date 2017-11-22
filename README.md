@@ -122,7 +122,7 @@ licenseFile.parse({
     fileParseFnc: (fileData, callback) => {
         let dataLines = fileData.split('\n');
 
-        if (dataLines.length != 9) {
+        if (dataLines.length !== 9) {
             return callback(new Error('LicenseFile::fileParseFnc: License file must have 9 lines, actual: ' + dataLines.length));
         }
 
@@ -165,3 +165,5 @@ There is an execution result:
     }
 }
 ```
+
+NOTICE: All numeric data will be converted to strings after parsing. You need to take care of a parsed data types.
