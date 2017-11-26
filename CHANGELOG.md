@@ -1,3 +1,10 @@
+## [v2.0.0]
+> Nov 26, 2017
+
+BREAKING CHANGE 1: Now `parse` function requires new parameter - license file template. It must be exactly the same template file passed to `generate` function before.
+
+BREAKING CHANGE 2: `fileData` parameter of `parse` function renamed to `licenseFile`.
+
 ## [v1.1.4]
 > Nov 26, 2017
 

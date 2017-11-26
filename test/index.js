@@ -32,6 +32,19 @@ const EMAIL               = 'some@email.com';
 const SOME_NUMBER         = 123;
 const EXPIRATION_DATE     = '2025/09/25';
 
+const template = [
+    '====BEGIN LICENSE====',
+    'Ver: {{&licenseVersion}}',
+    '{{&applicationVersion}}',
+    '{{&firstName}}',
+    '{{&lastName}}',
+    '{{&email}} - User E-mail',
+    '{{&someNumber}}',
+    '{{&expirationDate}}',
+    'Serial: {{&serial}}',
+    '=====END LICENSE====='
+].join('\n');
+
 describe('Generate license file', () => {
 
     it('with default template', done => {
@@ -66,21 +79,8 @@ describe('Generate license file', () => {
 
     it('with custom template', done => {
 
-        const template = [
-            '====BEGIN LICENSE====',
-            '{{&licenseVersion}}',
-            '{{&applicationVersion}}',
-            '{{&firstName}}',
-            '{{&lastName}}',
-            '{{&email}}',
-            '{{&someNumber}}',
-            '{{&expirationDate}}',
-            '{{&serial}}',
-            '=====END LICENSE====='
-        ].join('\n');
-
         licenseFile.generate({
-            template: template,
+            template,
             privateKeyPath: 'test/keys/private_key.pem',
             data: {
                 licenseVersion: LICENSE_VERSION,
@@ -95,13 +95,13 @@ describe('Generate license file', () => {
             should.equal(err, null);
 
             const regExp = new RegExp('^====BEGIN LICENSE====\\n' +
-                LICENSE_VERSION + '\\n' +
+                'Ver: ' + LICENSE_VERSION + '\\n' +
                 APPLICATION_VERSION + '\\n' +
                 FIRST_NAME + '\\n' +
                 LAST_NAME + '\\n' +
-                EMAIL + '\\n' +
+                EMAIL + ' - User E-mail\\n' +
                 SOME_NUMBER + '\\n' +
-                EXPIRATION_DATE + '\\n(.*)\\n=====END LICENSE=====$');
+                EXPIRATION_DATE + '\\nSerial: (.*)\\n=====END LICENSE=====$');
 
             fileData.should.match(regExp);
 
@@ -117,7 +117,7 @@ describe('Parse license files', () => {
     it('with default template', done => {
         licenseFile.parse({
             publicKeyPath: 'test/keys/public_key.pem',
-            fileData: fs.readFileSync('test/1.lic', 'utf8')
+            licenseFilePath: 'test/1.lic'
         }, (err, data) => {
             should.equal(err, null);
 
@@ -131,7 +131,7 @@ describe('Parse license files', () => {
     it('with default template (using key string)', done => {
         licenseFile.parse({
             publicKey: fs.readFileSync('test/keys/public_key.pem', 'utf8'),
-            fileData: fs.readFileSync('test/1.lic', 'utf8')
+            licenseFile: fs.readFileSync('test/1.lic', 'utf8')
         }, (err, data) => {
             should.equal(err, null);
 
@@ -144,11 +144,9 @@ describe('Parse license files', () => {
 
     it('with default template (bad license file)', done => {
 
-        const fileData = fs.readFileSync('test/1.lic', 'utf8').replace(/data string/g, 'another one data string');
-
         licenseFile.parse({
             publicKeyPath: 'test/keys/public_key.pem',
-            fileData: fileData
+            licenseFile: fs.readFileSync('test/1.lic', 'utf8').replace(/data string/g, 'another one data string')
         }, (err, data) => {
             should.equal(err, null);
 
@@ -160,40 +158,18 @@ describe('Parse license files', () => {
 
     it('with custom template', done => {
         licenseFile.parse({
+            template,
             publicKeyPath: 'test/keys/public_key.pem',
-            fileData: fs.readFileSync('test/2.lic', 'utf8'),
-            fileParseFnc: (fileData, callback) => {
-                const dataLines = fileData.split('\n');
-
-                if (dataLines.length !== 10) {
-                    return callback(new Error('LicenseFile::fileParseFnc: License file must have 6 lines, actual: ' + dataLines.length));
-                }
-
-                const licenseVersion     = dataLines[1];
-                const applicationVersion = dataLines[2];
-                const firstName          = dataLines[3];
-                const lastName           = dataLines[4];
-                const email              = dataLines[5];
-                const someNumber         = dataLines[6];
-                const expirationDate     = dataLines[7];
-                const serial             = dataLines[8];
-
-                callback(null, {
-                    serial: serial, data: {
-                        licenseVersion,
-                        applicationVersion,
-                        firstName,
-                        lastName,
-                        email,
-                        someNumber,
-                        expirationDate
-                    }
-                });
-            }
+            licenseFile: fs.readFileSync('test/2.lic', 'utf8')
         }, (err, data) => {
+
             should.equal(err, null);
 
+            Object.keys(data).should.deepEqual(['valid', 'serial', 'data']);
+            Object.keys(data.data).should.deepEqual(['licenseVersion', 'applicationVersion', 'firstName', 'lastName', 'email', 'someNumber', 'expirationDate']);
+
             data.valid.should.be.ok();
+            data.serial.should.equal('oZDqoEr2avwhAqwV4HInq9otNzeBeD/azq2yadDGLXDeUUQF/e8taKJynPp6yn2jARzwDSjuEwfRkdvX+n5kokMhWz3/1GJyi7Mdggy9+h0JUPmydpJ5hPL+X5Kp0tg/552C7Gfx9wcMh2ifqgRfhwLgTJQkOVWXACyWapchFeCi2jZHkKJqE3ZJTyQdGJINFRt5lRaDZZMCQGz7zBpiJE/86g71L9ziop8ny0EUW3mktmRJKT2WVPIH8Keq4bO+gG4qYUaDxH+syqrH4xHb2ivYkS7d/pgh2TRMbJCwMMrOw93IdmaSSxpOpnPPEykKl6qK7beRxJWbvb4l66zrvA==');
             data.data.licenseVersion.should.be.eql(LICENSE_VERSION);
             data.data.applicationVersion.should.be.eql(APPLICATION_VERSION);
             data.data.firstName.should.be.eql(FIRST_NAME);
@@ -208,37 +184,10 @@ describe('Parse license files', () => {
 
     it('with custom template (bad license file)', done => {
 
-        const fileData = fs.readFileSync('test/2.lic', 'utf8').replace(/2025\/09\/25/g, '2045/09/25');
-
         licenseFile.parse({
+            template,
             publicKeyPath: 'test/keys/public_key.pem',
-            fileData: fileData,
-            fileParseFnc: (fileData, callback) => {
-                let dataLines = fileData.split('\n');
-
-                if (dataLines.length !== 10) {
-                    return callback(new Error('LicenseFile::fileParseFnc: License file must have 10 lines, actual: ' + dataLines.length));
-                }
-
-                const licenseVersion     = dataLines[1];
-                const applicationVersion = dataLines[2];
-                const firstName          = dataLines[3];
-                const lastName           = dataLines[4];
-                const email              = dataLines[5];
-                const expirationDate     = dataLines[6];
-                const serial             = dataLines[7];
-
-                callback(null, {
-                    serial: serial, data: {
-                        licenseVersion: licenseVersion,
-                        applicationVersion: applicationVersion,
-                        firstName: firstName,
-                        lastName: lastName,
-                        email: email,
-                        expirationDate: expirationDate
-                    }
-                });
-            }
+            licenseFile: fs.readFileSync('test/2.lic', 'utf8').replace(/2025\/09\/25/g, '2045/09/25')
         }, (err, data) => {
             should.equal(err, null);
 
@@ -247,7 +196,8 @@ describe('Parse license files', () => {
             done();
         });
     });
-});
+})
+;
 
 describe('Clean', () => {
     it('license files', done => {

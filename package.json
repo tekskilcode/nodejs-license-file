@@ -1,7 +1,7 @@
 {
     "name": "nodejs-license-file",
     "description": "A lightweight License file generator and parser for NodeJS.",
-    "version": "1.1.4",
+    "version": "2.0.0",
     "license": "MIT",
     "author": "Yuriy Bushev <bushevuv@gmail.com>",
     "keywords": [

@@ -29,8 +29,8 @@ const licenseFile = require('nodejs-license-file');
 licenseFile.generate({
    privateKeyPath: 'path/to/key.pem', // You can also use `privateKey` to pass key as a string
    data: 'data string'
-}, (err, fileData) => {
-    console.log(fileData);
+}, (err, licenseFileContent) => {
+    console.log(licenseFileContent);
 });
 ```
 
@@ -49,7 +49,7 @@ const licenseFile = require('nodejs-license-file');
 
 licenseFile.parse({
     publicKeyPath: 'path/to/key.pub', // You can also use `publicKey` to pass key as a string
-    fileData: fs.readFileSync('path/to/file.lic', 'utf8')
+    licenseFilePath: 'path/to/file.lic' // You can also use `licenseFile` to pass file as a string
 }, (err, data) => {
     console.log(data);
 });
@@ -70,7 +70,7 @@ There is an execution result:
 ```javascript
 const licenseFile = require('nodejs-license-file');
 
-let template = [
+const template = [
     '====BEGIN LICENSE====',
     '{{&licenseVersion}}',
     '{{&applicationVersion}}',
@@ -84,7 +84,7 @@ let template = [
 
 licenseFile.generate({
     privateKeyPath: 'path/to/key.pem',
-    template: template,
+    template,
     data: {
         licenseVersion: '1',
         applicationVersion: '1.0.0',
@@ -93,8 +93,8 @@ licenseFile.generate({
         email: 'some@email.com',
         expirationDate: '12/10/2025'
     }
-}, (err, fileData) => {
-    console.log(fileData);
+}, (err, licenseFileContent) => {
+    console.log(licenseFileContent);
 });
 ```
 
@@ -118,34 +118,8 @@ const licenseFile = require('nodejs-license-file');
 
 licenseFile.parse({
     publicKeyPath: 'path/to/key.pub',
-    fileData: fs.readFileSync('path/to/file.lic', 'utf8'),
-    fileParseFnc: (fileData, callback) => {
-        let dataLines = fileData.split('\n');
-
-        if (dataLines.length !== 9) {
-            return callback(new Error('LicenseFile::fileParseFnc: License file must have 9 lines, actual: ' + dataLines.length));
-        }
-
-        let licenseVersion     = dataLines[1];
-        let applicationVersion = dataLines[2];
-        let firstName          = dataLines[3];
-        let lastName           = dataLines[4];
-        let email              = dataLines[5];
-        let expirationDate     = dataLines[6];
-        let serial             = dataLines[7];
-
-        callback(null, {
-            serial: serial,
-            data: {
-                licenseVersion: licenseVersion,
-                applicationVersion: applicationVersion,
-                firstName: firstName,
-                lastName: lastName,
-                email: email,
-                expirationDate: expirationDate
-            }
-        });
-    }
+    licenseFilePath: 'path/to/file.lic',
+    template
 }, (err, data) => {
     console.log(data);
 });
@@ -155,6 +129,7 @@ There is an execution result:
 ```
 {
     valid: true,
+    serial: 'oZDqoEr2avwhAqwV4HInq9otNzeBeD/azq2yn2jA ...',
     data: {
         licenseVersion: '1',
         applicationVersion: '1.0.0',
