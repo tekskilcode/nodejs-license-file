@@ -49,6 +49,21 @@ describe('Generate license file', () => {
         });
     });
 
+    it('with default template (with kew string)', done => {
+        licenseFile.generate({
+            privateKey: fs.readFileSync('test/keys/private_key.pem', 'utf8'),
+            data: 'data string'
+        }, (err, fileData) => {
+            should.equal(err, null);
+
+            fileData.should.match(/^====BEGIN LICENSE====\ndata string\n(.*)\n=====END LICENSE=====$/);
+
+            fs.writeFileSync('test/1.lic', fileData, 'utf8');
+
+            done()
+        });
+    });
+
     it('with custom template', done => {
 
         const template = [
@@ -102,6 +117,20 @@ describe('Parse license files', () => {
     it('with default template', done => {
         licenseFile.parse({
             publicKeyPath: 'test/keys/public_key.pem',
+            fileData: fs.readFileSync('test/1.lic', 'utf8')
+        }, (err, data) => {
+            should.equal(err, null);
+
+            data.valid.should.be.ok();
+            data.data.should.be.eql('data string');
+
+            done();
+        });
+    });
+
+    it('with default template (using key string)', done => {
+        licenseFile.parse({
+            publicKey: fs.readFileSync('test/keys/public_key.pem', 'utf8'),
             fileData: fs.readFileSync('test/1.lic', 'utf8')
         }, (err, data) => {
             should.equal(err, null);

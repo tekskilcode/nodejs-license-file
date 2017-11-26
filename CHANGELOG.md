@@ -1,3 +1,8 @@
+## [v1.1.4]
+> Nov 26, 2017
+
+- Introduce `privateKey` (for generate method) and `publicKey` (for parse method) parameters
+
 ## [v1.1.3]
 > Nov 22, 2017
 

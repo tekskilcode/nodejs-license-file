@@ -27,7 +27,7 @@ npm install nodejs-license-file --save
 const licenseFile = require('nodejs-license-file');
 
 licenseFile.generate({
-   privateKeyPath: 'path/to/key.pem',
+   privateKeyPath: 'path/to/key.pem', // You can also use `privateKey` to pass key as a string
    data: 'data string'
 }, (err, fileData) => {
     console.log(fileData);
@@ -48,7 +48,7 @@ xxxxxxxxxxxxxxxxxxxxx
 const licenseFile = require('nodejs-license-file');
 
 licenseFile.parse({
-    publicKeyPath: 'path/to/key.pub',
+    publicKeyPath: 'path/to/key.pub', // You can also use `publicKey` to pass key as a string
     fileData: fs.readFileSync('path/to/file.lic', 'utf8')
 }, (err, data) => {
     console.log(data);
