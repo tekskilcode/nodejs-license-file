@@ -1,3 +1,10 @@
+## [v3.0.0]
+> Dec 16, 2017
+
+BREAKING CHANGE 1: Default template was removed
+
+BREAKING CHANGE 2: API was changed
+
 ## [v2.0.1]
 > Nov 26, 2017
 

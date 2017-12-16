@@ -45,41 +45,49 @@ const template = [
     '=====END LICENSE====='
 ].join('\n');
 
+const template2 = [
+    '====BEGIN LICENSE====',
+    'Ver: {{&licenseVersion}}',
+    'Serial: {{&serial}}',
+    '=====END LICENSE====='
+].join('\n');
+
 describe('Generate license file', () => {
 
-    it('with default template', done => {
-        licenseFile.generate({
-            privateKeyPath: 'test/keys/private_key.pem',
-            data: 'data string'
-        }, (err, fileData) => {
-            should.equal(err, null);
-
-            fileData.should.match(/^====BEGIN LICENSE====\ndata string\n(.*)\n=====END LICENSE=====$/);
-
-            fs.writeFileSync('test/1.lic', fileData, 'utf8');
-
-            done()
-        });
+    it('template is required', () => {
+        (() => {
+            licenseFile.generate({
+                privateKeyPath: 'test/keys/private_key.pem',
+                data: {
+                    licenseVersion: LICENSE_VERSION
+                }
+            });
+        }).should.throw(Error('LicenseFile::generate: options.template is required'));
     });
 
-    it('with default template (with kew string)', done => {
-        licenseFile.generate({
-            privateKey: fs.readFileSync('test/keys/private_key.pem', 'utf8'),
-            data: 'data string'
-        }, (err, fileData) => {
-            should.equal(err, null);
+    it('data is required', () => {
+        (() => {
+            licenseFile.generate({
+                template,
+                privateKeyPath: 'test/keys/private_key.pem'
+            });
+        }).should.throw(Error('LicenseFile::generate: options.data is required'));
+    });
 
-            fileData.should.match(/^====BEGIN LICENSE====\ndata string\n(.*)\n=====END LICENSE=====$/);
-
-            fs.writeFileSync('test/1.lic', fileData, 'utf8');
-
-            done()
-        });
+    it('privateKey or privateKeyPath is required', () => {
+        (() => {
+            licenseFile.generate({
+                template,
+                data: {
+                    licenseVersion: LICENSE_VERSION
+                }
+            });
+        }).should.throw(Error('LicenseFile::generate: privateKeyPath or privateKey is required'));
     });
 
     it('with custom template', done => {
 
-        licenseFile.generate({
+        const fileData = licenseFile.generate({
             template,
             privateKeyPath: 'test/keys/private_key.pem',
             data: {
@@ -91,118 +99,105 @@ describe('Generate license file', () => {
                 someNumber: SOME_NUMBER,
                 expirationDate: EXPIRATION_DATE
             }
-        }, (err, fileData) => {
-            should.equal(err, null);
-
-            const regExp = new RegExp('^====BEGIN LICENSE====\\n' +
-                'Ver: ' + LICENSE_VERSION + '\\n' +
-                APPLICATION_VERSION + '\\n' +
-                FIRST_NAME + '\\n' +
-                LAST_NAME + '\\n' +
-                EMAIL + ' - User E-mail\\n' +
-                SOME_NUMBER + '\\n' +
-                EXPIRATION_DATE + '\\nSerial: (.*)\\n=====END LICENSE=====$');
-
-            fileData.should.match(regExp);
-
-            fs.writeFileSync('test/2.lic', fileData, 'utf8');
-
-            done()
         });
+
+        const regExp = new RegExp('^====BEGIN LICENSE====\\n' +
+            'Ver: ' + LICENSE_VERSION + '\\n' +
+            APPLICATION_VERSION + '\\n' +
+            FIRST_NAME + '\\n' +
+            LAST_NAME + '\\n' +
+            EMAIL + ' - User E-mail\\n' +
+            SOME_NUMBER + '\\n' +
+            EXPIRATION_DATE + '\\nSerial: (.*)\\n=====END LICENSE=====$');
+
+        fileData.should.match(regExp);
+
+        fs.writeFileSync('test/1.lic', fileData, 'utf8');
+
+        done();
     });
 });
 
 describe('Parse license files', () => {
 
-    it('with default template', done => {
-        licenseFile.parse({
-            publicKeyPath: 'test/keys/public_key.pem',
-            licenseFilePath: 'test/1.lic'
-        }, (err, data) => {
-            should.equal(err, null);
-
-            data.valid.should.be.ok();
-            data.data.should.be.eql('data string');
-
-            done();
-        });
+    it('template is required', () => {
+        (() => {
+            licenseFile.parse({
+                publicKeyPath: 'test/keys/public_key.pem',
+                licenseFile: fs.readFileSync('test/1.lic', 'utf8')
+            });
+        }).should.throw(Error('LicenseFile::parse: options.template is required'));
     });
 
-    it('with default template (using key string)', done => {
-        licenseFile.parse({
-            publicKey: fs.readFileSync('test/keys/public_key.pem', 'utf8'),
-            licenseFile: fs.readFileSync('test/1.lic', 'utf8')
-        }, (err, data) => {
-            should.equal(err, null);
-
-            data.valid.should.be.ok();
-            data.data.should.be.eql('data string');
-
-            done();
-        });
+    it('publicKeyPath or publicKey is required', () => {
+        (() => {
+            licenseFile.parse({
+                template,
+                licenseFile: fs.readFileSync('test/1.lic', 'utf8')
+            });
+        }).should.throw(Error('LicenseFile::parse: publicKeyPath or publicKey is required'));
     });
 
-    it('with default template (bad license file)', done => {
-
-        licenseFile.parse({
-            publicKeyPath: 'test/keys/public_key.pem',
-            licenseFile: fs.readFileSync('test/1.lic', 'utf8').replace(/data string/g, 'another one data string')
-        }, (err, data) => {
-            should.equal(err, null);
-
-            data.valid.should.not.be.ok();
-
-            done();
-        });
+    it('licenseFilePath or licenseFile is required', () => {
+        (() => {
+            licenseFile.parse({
+                template,
+                publicKeyPath: 'test/keys/public_key.pem'
+            });
+        }).should.throw(Error('LicenseFile::parse: licenseFilePath or licenseFile is required'));
     });
 
     it('with custom template', done => {
-        licenseFile.parse({
+
+        const data = licenseFile.parse({
             template,
             publicKeyPath: 'test/keys/public_key.pem',
-            licenseFile: fs.readFileSync('test/2.lic', 'utf8')
-        }, (err, data) => {
-
-            should.equal(err, null);
-
-            Object.keys(data).should.deepEqual(['valid', 'serial', 'data']);
-            Object.keys(data.data).should.deepEqual(['licenseVersion', 'applicationVersion', 'firstName', 'lastName', 'email', 'someNumber', 'expirationDate']);
-
-            data.valid.should.be.ok();
-            data.serial.should.equal('oZDqoEr2avwhAqwV4HInq9otNzeBeD/azq2yadDGLXDeUUQF/e8taKJynPp6yn2jARzwDSjuEwfRkdvX+n5kokMhWz3/1GJyi7Mdggy9+h0JUPmydpJ5hPL+X5Kp0tg/552C7Gfx9wcMh2ifqgRfhwLgTJQkOVWXACyWapchFeCi2jZHkKJqE3ZJTyQdGJINFRt5lRaDZZMCQGz7zBpiJE/86g71L9ziop8ny0EUW3mktmRJKT2WVPIH8Keq4bO+gG4qYUaDxH+syqrH4xHb2ivYkS7d/pgh2TRMbJCwMMrOw93IdmaSSxpOpnPPEykKl6qK7beRxJWbvb4l66zrvA==');
-            data.data.licenseVersion.should.be.eql(LICENSE_VERSION);
-            data.data.applicationVersion.should.be.eql(APPLICATION_VERSION);
-            data.data.firstName.should.be.eql(FIRST_NAME);
-            data.data.lastName.should.be.eql(LAST_NAME);
-            data.data.email.should.be.eql(EMAIL);
-            data.data.someNumber.should.be.eql(SOME_NUMBER.toString());
-            data.data.expirationDate.should.be.eql(EXPIRATION_DATE);
-
-            done();
+            licenseFile: fs.readFileSync('test/1.lic', 'utf8')
         });
+
+        Object.keys(data).should.deepEqual(['valid', 'serial', 'data']);
+        Object.keys(data.data).should.deepEqual(['licenseVersion', 'applicationVersion', 'firstName', 'lastName', 'email', 'someNumber', 'expirationDate']);
+
+        data.valid.should.be.ok();
+        data.serial.should.equal('oZDqoEr2avwhAqwV4HInq9otNzeBeD/azq2yadDGLXDeUUQF/e8taKJynPp6yn2jARzwDSjuEwfRkdvX+n5kokMhWz3/1GJyi7Mdggy9+h0JUPmydpJ5hPL+X5Kp0tg/552C7Gfx9wcMh2ifqgRfhwLgTJQkOVWXACyWapchFeCi2jZHkKJqE3ZJTyQdGJINFRt5lRaDZZMCQGz7zBpiJE/86g71L9ziop8ny0EUW3mktmRJKT2WVPIH8Keq4bO+gG4qYUaDxH+syqrH4xHb2ivYkS7d/pgh2TRMbJCwMMrOw93IdmaSSxpOpnPPEykKl6qK7beRxJWbvb4l66zrvA==');
+        data.data.licenseVersion.should.be.eql(LICENSE_VERSION);
+        data.data.applicationVersion.should.be.eql(APPLICATION_VERSION);
+        data.data.firstName.should.be.eql(FIRST_NAME);
+        data.data.lastName.should.be.eql(LAST_NAME);
+        data.data.email.should.be.eql(EMAIL);
+        data.data.someNumber.should.be.eql(SOME_NUMBER.toString());
+        data.data.expirationDate.should.be.eql(EXPIRATION_DATE);
+
+        done();
+    });
+
+    it('lack of placeholders in template', () => {
+        (() => {
+            licenseFile.parse({
+                template: template2,
+                publicKeyPath: 'test/keys/public_key.pem',
+                licenseFile: fs.readFileSync('test/1.lic', 'utf8')
+            });
+        }).should.throw(Error('License file corrupted'));
     });
 
     it('with custom template (bad license file)', done => {
 
-        licenseFile.parse({
+        const data = licenseFile.parse({
             template,
             publicKeyPath: 'test/keys/public_key.pem',
-            licenseFile: fs.readFileSync('test/2.lic', 'utf8').replace(/2025\/09\/25/g, '2045/09/25')
-        }, (err, data) => {
-            should.equal(err, null);
-
-            data.valid.should.not.be.ok();
-
-            done();
+            licenseFile: fs.readFileSync('test/1.lic', 'utf8').replace(/2025\/09\/25/g, '2045/09/25')
         });
+
+        data.valid.should.not.be.ok();
+
+        done();
     });
-})
-;
+});
 
 describe('Clean', () => {
     it('license files', done => {
         fs.unlinkSync('test/1.lic');
-        fs.unlinkSync('test/2.lic');
         done();
     });
 });

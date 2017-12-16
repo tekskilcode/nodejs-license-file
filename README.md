@@ -12,60 +12,7 @@ A lightweight (Zero dependency) License file generator and parser for NodeJS.
 
     `openssl rsa -pubout -in private_key.pem -out public_key.pem`
 
-## Basic usage
-
-### Getting started
-
-Install nodejs-license-file with:
-```
-npm install nodejs-license-file --save
-```
-
-### Generating license file
-
-```javascript
-const licenseFile = require('nodejs-license-file');
-
-licenseFile.generate({
-   privateKeyPath: 'path/to/key.pem', // You can also use `privateKey` to pass key as a string
-   data: 'data string'
-}, (err, licenseFileContent) => {
-    console.log(licenseFileContent);
-});
-```
-
-This will produce a license key, which uses the default template and will look similar to this:
-```
-====BEGIN LICENSE====
-data string
-xxxxxxxxxxxxxxxxxxxxx
-=====END LICENSE=====
-```
-
-### Parse and verify license file
-
-```javascript
-const licenseFile = require('nodejs-license-file');
-
-licenseFile.parse({
-    publicKeyPath: 'path/to/key.pub', // You can also use `publicKey` to pass key as a string
-    licenseFilePath: 'path/to/file.lic' // You can also use `licenseFile` to pass file as a string
-}, (err, data) => {
-    console.log(data);
-});
-```
-
-There is an execution result:
-```
-{
-   valid: true,
-   data: 'data string'
-}
-```
-
-## Advanced usage with custom template
-
-### Generating license file
+## Generating license file
 
 ```javascript
 const licenseFile = require('nodejs-license-file');
@@ -82,20 +29,27 @@ const template = [
     '=====END LICENSE====='
 ].join('\n');
 
-licenseFile.generate({
-    privateKeyPath: 'path/to/key.pem',
-    template,
-    data: {
-        licenseVersion: '1',
-        applicationVersion: '1.0.0',
-        firstName: 'Name',
-        lastName: 'Last Name',
-        email: 'some@email.com',
-        expirationDate: '12/10/2025'
-    }
-}, (err, licenseFileContent) => {
+try {
+ 
+    const licenseFileContent = licenseFile.generate({
+        privateKeyPath: 'path/to/key.pem',
+        template,
+        data: {
+            licenseVersion: '1',
+            applicationVersion: '1.0.0',
+            firstName: 'Name',
+            lastName: 'Last Name',
+            email: 'some@email.com',
+            expirationDate: '12/10/2025'
+        }
+    });
+    
     console.log(licenseFileContent);
-});
+
+} catch (err) {
+    
+    console.log(err);
+}
 ```
 
 This will produce a license key, which uses the default template and will look similar to this:
@@ -116,13 +70,20 @@ xxxxxxxxxxxxxxxxxxxxx
 ```javascript
 const licenseFile = require('nodejs-license-file');
 
-licenseFile.parse({
-    publicKeyPath: 'path/to/key.pub',
-    licenseFilePath: 'path/to/file.lic',
-    template
-}, (err, data) => {
+try {
+ 
+    const data = licenseFile.parse({
+        publicKeyPath: 'path/to/key.pub',
+        licenseFilePath: 'path/to/file.lic',
+        template
+    });
+    
     console.log(data);
-});
+    
+} catch (err) {
+    
+    console.log(err);
+}
 ```
 
 There is an execution result:
