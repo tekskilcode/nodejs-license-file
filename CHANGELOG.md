@@ -1,3 +1,8 @@
+## [v4.0.0]
+> Mar 03, 2018
+
+BREAKING CHANGE: Close #5. Use Deterministic version of JSON.stringify().
+
 ## [v3.0.0]
 > Dec 16, 2017
 

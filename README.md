@@ -1,6 +1,6 @@
 ## nodejs-license-file [![Build Status](https://travis-ci.org/bushev/nodejs-license-file.svg?branch=master)](https://travis-ci.org/bushev/nodejs-license-file)
 
-A lightweight (Zero dependency) License file generator and parser for NodeJS.
+A lightweight License file generator and parser for NodeJS.
 
 ## Generate a keypair using OpenSSL
 

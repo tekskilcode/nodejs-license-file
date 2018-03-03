@@ -1,7 +1,7 @@
 {
     "name": "nodejs-license-file",
     "description": "A lightweight License file generator and parser for NodeJS.",
-    "version": "3.0.0",
+    "version": "4.0.0",
     "license": "MIT",
     "author": "Yuriy Bushev <bushevuv@gmail.com>",
     "keywords": [
@@ -26,5 +26,8 @@
     "bugs": {
         "url": "https://github.com/bushev/nodejs-license-file/issues"
     },
-    "homepage": "https://github.com/bushev/nodejs-license-file"
+    "homepage": "https://github.com/bushev/nodejs-license-file",
+    "dependencies": {
+        "json-stable-stringify": "1.0.1"
+    }
 }

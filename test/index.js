@@ -159,7 +159,7 @@ describe('Parse license files', () => {
         Object.keys(data.data).should.deepEqual(['licenseVersion', 'applicationVersion', 'firstName', 'lastName', 'email', 'someNumber', 'expirationDate']);
 
         data.valid.should.be.ok();
-        data.serial.should.equal('oZDqoEr2avwhAqwV4HInq9otNzeBeD/azq2yadDGLXDeUUQF/e8taKJynPp6yn2jARzwDSjuEwfRkdvX+n5kokMhWz3/1GJyi7Mdggy9+h0JUPmydpJ5hPL+X5Kp0tg/552C7Gfx9wcMh2ifqgRfhwLgTJQkOVWXACyWapchFeCi2jZHkKJqE3ZJTyQdGJINFRt5lRaDZZMCQGz7zBpiJE/86g71L9ziop8ny0EUW3mktmRJKT2WVPIH8Keq4bO+gG4qYUaDxH+syqrH4xHb2ivYkS7d/pgh2TRMbJCwMMrOw93IdmaSSxpOpnPPEykKl6qK7beRxJWbvb4l66zrvA==');
+        data.serial.should.equal('AQWsPDQL8zhZDl20pe2Upt78+VGIcsbU5ImU6zHADEwR0YdEpRxul2evhCSHpNCVghvBh4ROnGqzSGsUHIqxPY+Yjhpj69yTtorxTnNJTD8DHy27mBuWOTjJ4933zFa4kJqZswYnPBnn2lc4wpUUcNYd+bs76UpiucACtuGSBi7I6IgPwU8NM1j0rrlZpPmX1oHYFDVSHNA91ADi9NVkwK21tKr5qNlvxfN3x8B6N50GzmGIYO4jVeuh4fJqUa6FAHoh2NFmTlZ91msSSv6IZ0erVr5eXKydrkqwzcnVe3VWwCptaa9BCb35zE2YzT+M7/vT92BD2EQMiD725EYJhA==');
         data.data.licenseVersion.should.be.eql(LICENSE_VERSION);
         data.data.applicationVersion.should.be.eql(APPLICATION_VERSION);
         data.data.firstName.should.be.eql(FIRST_NAME);
