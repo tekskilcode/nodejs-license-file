@@ -103,3 +103,54 @@ There is an execution result:
 ```
 
 NOTICE: All numeric data will be converted to strings after parsing. You need to take care of a parsed data types.
+
+## Parse and verify license string
+
+```javascript
+const licenseFile = require('nodejs-license-file');
+
+try {
+
+    const licence = `
+====BEGIN LICENSE====
+1
+1.0.0
+Name
+Last Name
+some@email.com
+12/10/2025
+xxxxxxxxxxxxxxxxxxxxx
+=====END LICENSE=====
+    `;
+ 
+    const data = licenseFile.parse({
+        publicKeyPath: 'path/to/key.pub',
+        licenseFile: licence,
+        template
+    });
+    
+    console.log(data);
+    
+} catch (err) {
+    
+    console.log(err);
+}
+```
+
+There is an execution result:
+```
+{
+    valid: true,
+    serial: 'oZDqoEr2avwhAqwV4HInq9otNzeBeD/azq2yn2jA ...',
+    data: {
+        licenseVersion: '1',
+        applicationVersion: '1.0.0',
+        firstName: 'Name',
+        lastName: 'Last Name',
+        email: 'some@email.com',
+        expirationDate: '12/10/2025'
+    }
+}
+```
+
+NOTICE: All numeric data will be converted to strings after parsing. You need to take care of a parsed data types.
